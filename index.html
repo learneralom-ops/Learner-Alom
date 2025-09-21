@@ -15,7 +15,42 @@
         .profile-pic { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; margin-right: 15px; }
         .profile-info h1 { color: #fff; font-size: 24px; margin-bottom: 10px; border-bottom: 2px solid rgba(255, 255, 255, 0.4); }
         .profile-info p { color: #ddd; font-size: 16px; }
-        .banner-ad { margin-bottom: 20px; text-align: center; }
+        /* --- Banner Ad Styling --- */
+
+/* The main container for the banner ad */
+.banner-ad {
+    margin-top: 20px; /* উপরের অংশ থেকে একটু দূরত্ব তৈরি করবে */
+    margin-bottom: 20px; /* নিচের অংশ থেকে একটু দূরত্ব তৈরি করবে */
+    padding: 10px; /* ভেতরের দিকে কিছুটা জায়গা রাখবে */
+    display: flex; /* কন্টেন্টকে সেন্টারে আনার জন্য */
+    justify-content: center; /* কন্টেন্টকে অনুভূমিকভাবে (horizontally) সেন্টারে রাখবে */
+    align-items: center; /* কন্টেন্টকে উল্লম্বভাবে (vertically) সেন্টারে রাখবে */
+    min-height: 50px; /* বিজ্ঞাপনের একটি ন্যূনতম উচ্চতা নির্ধারণ করবে */
+    background: rgba(0, 0, 0, 0.15); /* একটি হালকা কালো ব্যাকগ্রাউন্ড দেবে */
+    border-radius: 10px; /* কোণগুলোকে গোলাকার করবে */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* একটি হালকা সাদা বর্ডার দেবে */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* একটি হালকা শ্যাডো যুক্ত করবে */
+    overflow: hidden; /* যদি বিজ্ঞাপন কন্টেইনারের বাইরে চলে যায়, তবে লুকিয়ে রাখবে */
+}
+
+/* This targets any direct children inside the banner container, like iframes or images */
+.banner-ad > * {
+    max-width: 100%; /* বিজ্ঞাপন যেন কন্টেইনারের বাইরে না যায় */
+    display: block; /* ডিসপ্লে ব্লক করে অতিরিক্ত ফাঁকা জায়গা দূর করবে */
+}
+
+/* Specifically for iframes, which some ad networks use */
+.banner-ad iframe {
+    border: none; /* iframe এর ডিফল্ট বর্ডার মুছে ফেলবে */
+    vertical-align: middle; /* মাঝখানে অ্যালাইন করতে সাহায্য করে */
+}
+
+/* For smaller screens (Mobile Responsive) */
+@media (max-width: 768px) {
+    .banner-ad {
+        padding: 5px; /* মোবাইল ডিভাইসের জন্য প্যাডিং কিছুটা কমাবে */
+    }
+}
         .slider-container { position: relative; width: 100%; height: 250px; overflow: hidden; border-radius: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
         .slider { display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 100%; }
         .slide { min-width: 100%; height: 100%; }
