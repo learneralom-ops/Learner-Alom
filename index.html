@@ -15,43 +15,28 @@
         .profile-pic { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; margin-right: 15px; }
         .profile-info h1 { color: #fff; font-size: 24px; margin-bottom: 10px; border-bottom: 2px solid rgba(255, 255, 255, 0.4); }
         .profile-info p { color: #ddd; font-size: 16px; }
-        /* --- Banner Ad Styling --- */
+        
+        /* --- Banner Ad Styling (Improved for Mobile) --- */
+        .banner-ad {
+            margin: 20px 0;
+            padding: 0; /* Remove padding to avoid extra space */
+            display: flex; /* Use flexbox for easy centering */
+            justify-content: center; /* Horizontally center the content */
+            align-items: center; /* Vertically center the content */
+            min-height: 100px; /* Give it a minimum height */
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Hide anything that goes outside the container */
+        }
+        .banner-ad > div,
+        .banner-ad > iframe {
+            max-width: 100% !important; /* Ensure ad fits inside the container */
+            margin: 0 auto !important; /* Center the ad block itself */
+            display: block !important;
+        }
 
-/* The main container for the banner ad */
-.banner-ad {
-    margin-top: 20px; /* উপরের অংশ থেকে একটু দূরত্ব তৈরি করবে */
-    margin-bottom: 20px; /* নিচের অংশ থেকে একটু দূরত্ব তৈরি করবে */
-    padding: 10px; /* ভেতরের দিকে কিছুটা জায়গা রাখবে */
-    display: flex; /* কন্টেন্টকে সেন্টারে আনার জন্য */
-    justify-content: center; /* কন্টেন্টকে অনুভূমিকভাবে (horizontally) সেন্টারে রাখবে */
-    align-items: center; /* কন্টেন্টকে উল্লম্বভাবে (vertically) সেন্টারে রাখবে */
-    min-height: 50px;
-    width: 300px;/* বিজ্ঞাপনের একটি ন্যূনতম উচ্চতা নির্ধারণ করবে */
-    background: rgba(0, 0, 0, 0.15); /* একটি হালকা কালো ব্যাকগ্রাউন্ড দেবে */
-    border-radius: 10px; /* কোণগুলোকে গোলাকার করবে */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* একটি হালকা সাদা বর্ডার দেবে */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* একটি হালকা শ্যাডো যুক্ত করবে */
-    overflow: hidden; /* যদি বিজ্ঞাপন কন্টেইনারের বাইরে চলে যায়, তবে লুকিয়ে রাখবে */
-}
-
-/* This targets any direct children inside the banner container, like iframes or images */
-.banner-ad > * {
-    max-width: 100%; /* বিজ্ঞাপন যেন কন্টেইনারের বাইরে না যায় */
-    display: block; /* ডিসপ্লে ব্লক করে অতিরিক্ত ফাঁকা জায়গা দূর করবে */
-}
-
-/* Specifically for iframes, which some ad networks use */
-.banner-ad iframe {
-    border: none; /* iframe এর ডিফল্ট বর্ডার মুছে ফেলবে */
-    vertical-align: middle; /* মাঝখানে অ্যালাইন করতে সাহায্য করে */
-}
-
-/* For smaller screens (Mobile Responsive) */
-@media (max-width: 768px) {
-    .banner-ad {
-        padding: 5px; /* মোবাইল ডিভাইসের জন্য প্যাডিং কিছুটা কমাবে */
-    }
-}
         .slider-container { position: relative; width: 100%; height: 250px; overflow: hidden; border-radius: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
         .slider { display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 100%; }
         .slide { min-width: 100%; height: 100%; }
@@ -103,7 +88,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
         
-        // --- START: আপনার FIREBASE CONFIG এখানে পেস্ট করুন ---
         const firebaseConfig = {
           apiKey: "AIzaSyCQvwxezeFwUW-8iuGqKn6Vzx8fqA-lq8w",
           authDomain: "learner-alom.firebaseapp.com",
@@ -113,13 +97,10 @@
           messagingSenderId: "812834864427",
           appId: "1:812834864427:web:c1d1a2fc89c59c30cb596e"
         };
-        // --- END: আপনার FIREBASE CONFIG এখানে পেস্ট করুন ---
         
-        // Firebase Initialization
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Global settings
         let maxClicks = 10;
         let countdownTime = 30;
 
@@ -142,7 +123,6 @@
             document.getElementById('profileName').textContent = data.profile.name;
             document.getElementById('profileDesc').textContent = data.profile.description;
             
-            // --- পরিবর্তিত অংশ ---
             if (data.ads && data.ads.bannerCode) {
                 loadAdScript(document.getElementById('bannerAdContainer'), data.ads.bannerCode);
             }
@@ -151,7 +131,6 @@
             const sliderControls = document.getElementById('sliderControls');
             slider.innerHTML = '';
             sliderControls.innerHTML = '';
-            // --- এখানে ডেটা স্ট্রাকচার ঠিক করা হয়েছে ---
             const sliderImages = data.slider ? [data.slider.slide1, data.slider.slide2, data.slider.slide3].filter(Boolean) : [];
             sliderImages.forEach((imgUrl, index) => {
                 slider.innerHTML += `<div class="slide"><img src="${imgUrl}" alt="Slide ${index+1}"></div>`;
@@ -164,7 +143,6 @@
 
             const fileGrid = document.getElementById('fileGrid');
             fileGrid.innerHTML = '';
-            // --- এখানে ডেটা স্ট্রাকচার ঠিক করা হয়েছে ---
             if (data.fileCards && Array.isArray(data.fileCards)) {
                 data.fileCards.forEach(card => {
                     const cardHTML = `
@@ -246,14 +224,13 @@
             }
         }
 
-        // --- নতুন ফাংশনটি এখানে যোগ করা হয়েছে ---
+        // --- নতুন এবং উন্নত loadAdScript ফাংশন ---
         function loadAdScript(container, htmlString) {
             if (!container || !htmlString) return;
-            container.innerHTML = ''; // Clear previous content
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = htmlString;
+            container.innerHTML = '';
 
-            const scripts = Array.from(tempDiv.querySelectorAll('script'));
+            const fragment = document.createRange().createContextualFragment(htmlString);
+            const scripts = fragment.querySelectorAll('script');
             
             scripts.forEach(oldScript => {
                 const newScript = document.createElement('script');
@@ -264,12 +241,7 @@
                     newScript.text = oldScript.innerHTML;
                 }
                 container.appendChild(newScript);
-                oldScript.parentNode.removeChild(oldScript);
             });
-
-            while (tempDiv.firstChild) {
-                container.appendChild(tempDiv.firstChild);
-            }
         }
     </script>
 </body>
