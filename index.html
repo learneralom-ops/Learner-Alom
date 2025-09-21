@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learner Alom</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Monetag SDK Code -->
     <script src='//libtl.com/sdk.js' data-zone='9877815' data-sdk='show_9877815'></script>
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #9953ff 0%, #34026c 100%); color: #fff; min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
@@ -17,8 +15,8 @@
         .profile-pic { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; margin-right: 15px; }
         .profile-info h1 { color: #fff; font-size: 24px; margin-bottom: 10px; border-bottom: 2px solid rgba(255, 255, 255, 0.4); }
         .profile-info p { color: #ddd; font-size: 16px; }
-        .banner-ad { margin-bottom: 20px; text-align: center; } /* Banner ad container style */
-        .slider-container { position: relative; width: 100%; height: 250px; overflow: hidden; border-radius: 10px; margin-bottom: 20px; }
+        .banner-ad { margin-bottom: 20px; text-align: center; }
+        .slider-container { position: relative; width: 100%; height: 250px; overflow: hidden; border-radius: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
         .slider { display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 100%; }
         .slide { min-width: 100%; height: 100%; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
@@ -38,7 +36,6 @@
         .unlock-btn:hover:not(:disabled) { background: linear-gradient(to right, #2575fc, #6a11cb); }
         .unlock-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
         .unlock-btn.download-ready { background: linear-gradient(to right, #28a745, #218838); }
-        .unlock-btn.download-ready:hover { background: linear-gradient(to right, #218838, #28a745); }
         .unlock-btn i { margin-right: 8px; }
         footer { text-align: center; padding: 20px; margin-top: 20px; background: rgba(0, 0, 0, 0.2); color: white; font-size: 14px; border-radius: 10px; }
         @media (max-width: 768px) { .file-grid { grid-template-columns: 1fr; } header { flex-direction: column; text-align: center; } .profile-pic { margin-right: 0; margin-bottom: 10px; } .slider-container { height: 200px; } }
@@ -50,34 +47,26 @@
     <div class="container" id="appContainer" style="display:none;">
         <header>
             <img src="" alt="Profile Picture" class="profile-pic" id="profilePic">
-            <div class="profile-info">
-                <h1 id="profileName"></h1>
-                <p id="profileDesc"></p>
-            </div>
+            <div class="profile-info"> <h1 id="profileName"></h1> <p id="profileDesc"></p> </div>
         </header>
-
         <div class="banner-ad" id="bannerAdContainer"></div>
-
         <div class="slider-container">
             <div class="slider" id="slider"></div>
             <div class="slider-controls" id="sliderControls"></div>
         </div>
-        
         <div class="main-content">
             <h2 class="section-title">Available Files</h2>
-            <div class="file-grid" id="fileGrid">
-                <!-- File cards will be loaded here dynamically -->
-            </div>
+            <div class="file-grid" id="fileGrid"></div>
         </div>
-        
         <footer id="footerContainer"><p id="footerText"></p></footer>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    
-    <script>
+    <!-- Firebase v9 (modular) script -->
+    <script type="module">
+        // Firebase v9 Modular Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        
         // --- START: আপনার FIREBASE CONFIG এখানে পেস্ট করুন ---
         const firebaseConfig = {
   apiKey: "AIzaSyCQvwxezeFwUW-8iuGqKn6Vzx8fqA-lq8w",
@@ -91,22 +80,20 @@
         // --- END: আপনার FIREBASE CONFIG এখানে পেস্ট করুন ---
         
         // Firebase Initialization
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.getDatabase(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         // Global settings
         let maxClicks = 10;
         let countdownTime = 30;
 
-        // Fetch and display data on page load
         window.addEventListener('DOMContentLoaded', () => {
-            const dataRef = firebase.ref(db, 'appData');
-            firebase.get(dataRef).then((snapshot) => {
+            const dataRef = ref(db, 'appData');
+            get(dataRef).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    populatePage(data);
+                    populatePage(snapshot.val());
                 } else {
-                    document.getElementById('loadingOverlay').innerText = 'Configuration not found. Please set up data in the admin panel.';
+                    document.getElementById('loadingOverlay').innerText = 'Configuration not found.';
                 }
             }).catch((error) => {
                 console.error(error);
@@ -115,20 +102,16 @@
         });
 
         function populatePage(data) {
-            // Profile
             document.getElementById('profilePic').src = data.profile.imageUrl;
             document.getElementById('profileName').textContent = data.profile.name;
             document.getElementById('profileDesc').textContent = data.profile.description;
-
-            // Ads
             document.getElementById('bannerAdContainer').innerHTML = data.ads.bannerCode;
             
-            // Slider
             const slider = document.getElementById('slider');
             const sliderControls = document.getElementById('sliderControls');
             slider.innerHTML = '';
             sliderControls.innerHTML = '';
-            Object.values(data.slider).forEach((imgUrl, index) => {
+            Object.values(data.slider || {}).forEach((imgUrl, index) => {
                 if(imgUrl) {
                     slider.innerHTML += `<div class="slide"><img src="${imgUrl}" alt="Slide ${index+1}"></div>`;
                     sliderControls.innerHTML += `<div class="slider-dot ${index === 0 ? 'active' : ''}"></div>`;
@@ -136,11 +119,9 @@
             });
             initializeSlider();
 
-            // Settings
-            maxClicks = data.settings.requiredClicks || 10;
-            countdownTime = data.settings.countdownTime || 30;
+            maxClicks = data.settings?.requiredClicks || 10;
+            countdownTime = data.settings?.countdownTime || 30;
 
-            // File Cards
             const fileGrid = document.getElementById('fileGrid');
             fileGrid.innerHTML = '';
             if (data.fileCards) {
@@ -151,20 +132,16 @@
                             <div class="file-details">
                                 <h3 class="file-title">${card.title}</h3>
                                 <p class="file-description">${card.description}</p>
-                                <button class="unlock-btn" data-clicks="0" data-link="${card.downloadLink}" onclick="handleUnlockClick(this)">
+                                <button class="unlock-btn" data-clicks="0" data-link="${card.downloadLink}">
                                     <i class="fas fa-lock"></i> Unlock (0/${maxClicks})
                                 </button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                     fileGrid.innerHTML += cardHTML;
                 });
             }
 
-            // Footer
             document.getElementById('footerText').innerHTML = data.footer.text;
-
-            // Show page content
             document.getElementById('loadingOverlay').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
         }
@@ -178,35 +155,34 @@
 
             let currentSlide = 0;
             const slideCount = slides.length;
-            function updateSlider() { 
+            const updateSlider = () => { 
                 slider.style.transform = `translateX(-${currentSlide * 100}%)`; 
                 dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide)); 
-            }
-            function nextSlide() { currentSlide = (currentSlide + 1) % slideCount; updateSlider(); }
+            };
+            const nextSlide = () => { currentSlide = (currentSlide + 1) % slideCount; updateSlider(); };
             dots.forEach((dot, i) => dot.addEventListener('click', () => { currentSlide = i; updateSlider(); }));
             setInterval(nextSlide, 5000);
         }
         
+        // Event delegation for unlock buttons
+        document.getElementById('fileGrid').addEventListener('click', function(event) {
+            const button = event.target.closest('.unlock-btn');
+            if (button) {
+                handleUnlockClick(button);
+            }
+        });
+
         function handleUnlockClick(button) {
             let currentClicks = parseInt(button.dataset.clicks);
             const downloadLink = button.dataset.link;
-
             if (button.disabled) return;
-
             if (currentClicks >= maxClicks) {
-                window.open(downloadLink, '_blank');
+                if(downloadLink) window.open(downloadLink, '_blank');
                 return;
             }
-
             try {
-                if (typeof window['show_9877815'] === 'function') {             
-                    window['show_9877815']();
-                } else {
-                    console.error('Monetag SDK function is not available.');
-                }
-            } catch (e) {
-                console.error("Error showing ad:", e);
-            }
+                if (typeof window['show_9877815'] === 'function') { window['show_9877815'](); }
+            } catch (e) { console.error("Error showing ad:", e); }
 
             currentClicks++;
             button.dataset.clicks = currentClicks;
@@ -218,7 +194,6 @@
                 button.disabled = true;
                 let timeLeft = countdownTime;
                 button.innerHTML = `অপেক্ষা করুন... (${timeLeft}s)`;
-                
                 const countdownInterval = setInterval(() => {
                     timeLeft--;
                     button.innerHTML = `অপেক্ষা করুন... (${timeLeft}s)`;
