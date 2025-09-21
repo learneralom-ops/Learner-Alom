@@ -16,26 +16,24 @@
         .profile-info h1 { color: #fff; font-size: 24px; margin-bottom: 10px; border-bottom: 2px solid rgba(255, 255, 255, 0.4); }
         .profile-info p { color: #ddd; font-size: 16px; }
         
-        /* --- Banner Ad Styling (Improved for Mobile) --- */
-        .banner-ad {
-            margin: 10px 0;
-            padding: 0; /* Remove padding to avoid extra space */
-            display: flex; /* Use flexbox for easy centering */
-            justify-content: center; /* Horizontally center the content */
-            align-items: center; /* Vertically center the content */
-            min-height: 50px; /* Give it a minimum height */
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            overflow: hidden; /* Hide anything that goes outside the container */
-        }
-        .banner-ad > div,
-        .banner-ad > iframe {
-            max-width: 100% !important; /* Ensure ad fits inside the container */
-            margin: 0 auto !important; /* Center the ad block itself */
-            display: block !important;
-        }
+        /* --- Banner Ad Styling (Fixed for Specific Ad Sizes) --- */
+.banner-ad {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center; /* বিজ্ঞাপনটিকে মাঝখানে দেখানোর জন্য */
+    align-items: center;
+    width: 100%;
+    /* আমরা কন্টেইনারে কোনো নির্দিষ্ট উচ্চতা দেব না */
+}
+
+/* এই অংশটিই মূল সমাধান */
+.banner-ad > div,
+.banner-ad > iframe {
+    width: auto !important;   /* বিজ্ঞাপনের নিজস্ব width ব্যবহার করতে দিন */
+    height: auto !important;  /* বিজ্ঞাপনের নিজস্ব height ব্যবহার করতে দিন */
+    max-width: 100%;        /* কিন্তু স্ক্রিন ছোট হলে যেন উপচে না পড়ে */
+    flex-shrink: 0;         /* ফ্লেক্স কন্টেইনারে বিজ্ঞাপন যেন সংকুচিত না হয় */
+}
 
         .slider-container { position: relative; width: 100%; height: 250px; overflow: hidden; border-radius: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
         .slider { display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 100%; }
