@@ -69,14 +69,14 @@
         
         // --- START: আপনার FIREBASE CONFIG এখানে পেস্ট করুন ---
         const firebaseConfig = {
-  apiKey: "AIzaSyCQvwxezeFwUW-8iuGqKn6Vzx8fqA-lq8w",
-  authDomain: "learner-alom.firebaseapp.com",
-  databaseURL: "https://learner-alom-default-rtdb.firebaseio.com",
-  projectId: "learner-alom",
-  storageBucket: "learner-alom.appspot.com",
-  messagingSenderId: "812834864427",
-  appId: "1:812834864427:web:c1d1a2fc89c59c30cb596e"
-};
+          apiKey: "AIzaSyCQvwxezeFwUW-8iuGqKn6Vzx8fqA-lq8w",
+          authDomain: "learner-alom.firebaseapp.com",
+          databaseURL: "https://learner-alom-default-rtdb.firebaseio.com",
+          projectId: "learner-alom",
+          storageBucket: "learner-alom.appspot.com",
+          messagingSenderId: "812834864427",
+          appId: "1:812834864427:web:c1d1a2fc89c59c30cb596e"
+        };
         // --- END: আপনার FIREBASE CONFIG এখানে পেস্ট করুন ---
         
         // Firebase Initialization
@@ -105,17 +105,21 @@
             document.getElementById('profilePic').src = data.profile.imageUrl;
             document.getElementById('profileName').textContent = data.profile.name;
             document.getElementById('profileDesc').textContent = data.profile.description;
-            document.getElementById('bannerAdContainer').innerHTML = data.ads.bannerCode;
+            
+            // --- পরিবর্তিত অংশ ---
+            if (data.ads && data.ads.bannerCode) {
+                loadAdScript(document.getElementById('bannerAdContainer'), data.ads.bannerCode);
+            }
             
             const slider = document.getElementById('slider');
             const sliderControls = document.getElementById('sliderControls');
             slider.innerHTML = '';
             sliderControls.innerHTML = '';
-            Object.values(data.slider || {}).forEach((imgUrl, index) => {
-                if(imgUrl) {
-                    slider.innerHTML += `<div class="slide"><img src="${imgUrl}" alt="Slide ${index+1}"></div>`;
-                    sliderControls.innerHTML += `<div class="slider-dot ${index === 0 ? 'active' : ''}"></div>`;
-                }
+            // --- এখানে ডেটা স্ট্রাকচার ঠিক করা হয়েছে ---
+            const sliderImages = data.slider ? [data.slider.slide1, data.slider.slide2, data.slider.slide3].filter(Boolean) : [];
+            sliderImages.forEach((imgUrl, index) => {
+                slider.innerHTML += `<div class="slide"><img src="${imgUrl}" alt="Slide ${index+1}"></div>`;
+                sliderControls.innerHTML += `<div class="slider-dot ${index === 0 ? 'active' : ''}"></div>`;
             });
             initializeSlider();
 
@@ -124,8 +128,9 @@
 
             const fileGrid = document.getElementById('fileGrid');
             fileGrid.innerHTML = '';
-            if (data.fileCards) {
-                Object.values(data.fileCards).forEach(card => {
+            // --- এখানে ডেটা স্ট্রাকচার ঠিক করা হয়েছে ---
+            if (data.fileCards && Array.isArray(data.fileCards)) {
+                data.fileCards.forEach(card => {
                     const cardHTML = `
                         <div class="file-card">
                             <img src="${card.imageUrl}" alt="${card.title}" class="file-image">
@@ -164,7 +169,6 @@
             setInterval(nextSlide, 5000);
         }
         
-        // Event delegation for unlock buttons
         document.getElementById('fileGrid').addEventListener('click', function(event) {
             const button = event.target.closest('.unlock-btn');
             if (button) {
@@ -203,6 +207,32 @@
                         button.innerHTML = `<i class="fas fa-lock"></i> Unlock (${currentClicks}/${maxClicks})`;
                     }
                 }, 1000);
+            }
+        }
+
+        // --- নতুন ফাংশনটি এখানে যোগ করা হয়েছে ---
+        function loadAdScript(container, htmlString) {
+            if (!container || !htmlString) return;
+            container.innerHTML = ''; // Clear previous content
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
+
+            const scripts = Array.from(tempDiv.querySelectorAll('script'));
+            
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                if (oldScript.innerHTML) {
+                    newScript.text = oldScript.innerHTML;
+                }
+                container.appendChild(newScript);
+                oldScript.parentNode.removeChild(oldScript);
+            });
+
+            while (tempDiv.firstChild) {
+                container.appendChild(tempDiv.firstChild);
             }
         }
     </script>
